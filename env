@@ -1,0 +1,6 @@
+PORT=3000
+MONGODB_USER=nikapanchenko94
+MONGODB_PASSWORD=fA5w89vhsKdi3fuW
+MONGODB_URL=cluster0.i2v7o.mongodb.net
+MONGODB_DB=contacts
+
