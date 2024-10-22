@@ -56,14 +56,16 @@ export const createContactsController = async (req, res, next) => {
     );
   }
 
-  const contact = await createContact({
-    name,
-    phoneNumber,
-    contactType,
-    email,
-    isFavourite,
+  const contact = await createContact(
+    {
+      name,
+      phoneNumber,
+      contactType,
+      email,
+      isFavourite,
+    },
     userId,
-  });
+  );
   res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
