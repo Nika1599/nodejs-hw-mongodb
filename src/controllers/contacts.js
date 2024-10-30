@@ -52,6 +52,7 @@ export const getContactByIdController = async (req, res, next) => {
 export const createContactsController = async (req, res, next) => {
   const { name, phoneNumber, contactType, email, isFavourite } = req.body;
   const userId = req.user._id;
+
   if (!name || !phoneNumber || !contactType) {
     throw createHttpError(
       400,
@@ -120,13 +121,13 @@ export const patchContactController = async (req, res, next) => {
     photo: photoUrl,
   });
   if (!result) {
-    next(createHttpError(404, 'Student not found'));
+    next(createHttpError(404, 'Contact not found'));
     return;
   }
 
   res.json({
     status: 200,
-    message: `Successfully patched a student!`,
+    message: `Successfully patched a  contact!`,
     data: result.contact,
   });
 };
