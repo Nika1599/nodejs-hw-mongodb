@@ -1,8 +1,14 @@
 import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
-import { env } from './utils/env';
-import { getAllContacts, getContactById } from './services/contacts';
+import { env } from './utils/env.js';
+import { UPLOAD_DIR } from './constants/index.js';
+
+import router from './routers/index.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import cookieParser from 'cookie-parser';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
 
 const PORT = Number(env('PORT', '3000'));
 
@@ -10,6 +16,7 @@ export const setupServer = () => {
   const app = express();
   app.use(express.json());
   app.use(cors());
+  app.use(cookieParser());
   app.use(
     pino({
       transport: {
@@ -18,33 +25,14 @@ export const setupServer = () => {
     }),
   );
 
-  app.get('/contacts', async (req, res) => {
-    const contacts = await getAllContacts();
-    res.status(200).json({
-      data: contacts,
-      message: 'Successfully found contacts!',
-    });
-  });
-  app.get('/contacts/:contactId', async (req, res, next) => {
-    const { contactId } = req.params;
-    const contact = await getContactById(contactId);
+  app.use('/api-docs', swaggerDocs());
 
-    if (!contact) {
-      res.status(404).json({
-        message: 'Contact not found',
-      });
-      return;
-    }
+  app.use(router);
 
-    res.status(200).json({
-      message: 'Successfully found contact with id ${contactId}!',
-      data: contact,
-    });
-  });
+  app.use('/uploads', express.static(UPLOAD_DIR));
 
-  app.use('*', (req, res, next) => {
-    res.status(404).json({ message: 'Not found' });
-  });
+  app.use('*', notFoundHandler);
+  app.use(errorHandler);
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
